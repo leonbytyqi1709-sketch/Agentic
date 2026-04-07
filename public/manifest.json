@@ -1,0 +1,23 @@
+{
+  "name": "ClientPulse",
+  "short_name": "ClientPulse",
+  "description": "Premium SaaS for freelancers and small agencies",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#E11D48",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/agentic-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/agentic-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
