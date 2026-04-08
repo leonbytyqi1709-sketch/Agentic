@@ -10,6 +10,8 @@ import {
   Plus,
   Pencil,
   Trash2,
+  CheckSquare,
+  Square,
 } from 'lucide-react'
 import AppLayout from '../components/layout/AppLayout.js'
 import { useClients } from '../hooks/useClients.js'
@@ -17,6 +19,7 @@ import { useProjects } from '../hooks/useProjects.js'
 import { useInvoices } from '../hooks/useInvoices.js'
 import { useActivities } from '../hooks/useActivities.js'
 import { useTimeEntries } from '../hooks/useTimeEntries.js'
+import { useTasks } from '../hooks/useTasks.js'
 import { useProfile } from '../hooks/useProfile.js'
 import OnboardingCard from '../components/OnboardingCard.js'
 import GrowthChart from '../components/dashboard/GrowthChart.js'
@@ -118,6 +121,7 @@ export default function Dashboard() {
   const { invoices } = useInvoices()
   const { activities } = useActivities(10)
   const { totalSeconds } = useTimeEntries()
+  const { tasks, updateTask } = useTasks()
   const { profile } = useProfile()
   const [range, setRange] = useState<DateRange>('30')
 
@@ -232,6 +236,20 @@ export default function Dashboard() {
       maximumFractionDigits: 0,
     }).format(n)
 
+  const openTasks = useMemo(
+    () =>
+      tasks
+        .filter((t) => t.status !== 'done')
+        .sort((a, b) => {
+          const ad = a.due_date ? new Date(a.due_date).getTime() : Infinity
+          const bd = b.due_date ? new Date(b.due_date).getTime() : Infinity
+          return ad - bd
+        })
+        .slice(0, 6),
+    [tasks]
+  )
+  const openTasksCount = tasks.filter((t) => t.status !== 'done').length
+
   const recentProjects = projects.slice(0, 5)
   const loading = cl || pl
 
@@ -268,7 +286,7 @@ export default function Dashboard() {
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <StatCard
               icon={CircleDollarSign}
               label="Revenue"
@@ -293,6 +311,12 @@ export default function Dashboard() {
               label="Hours tracked"
               value={formatHours(totalSeconds)}
               sub={`${invoices.length} invoices`}
+            />
+            <StatCard
+              icon={CheckSquare}
+              label="Open Tasks"
+              value={openTasksCount}
+              sub={`${tasks.filter((t) => t.priority === 'high' && t.status !== 'done').length} high priority`}
             />
           </div>
 
@@ -331,6 +355,69 @@ export default function Dashboard() {
                         {days === 0 ? 'Today' : `${days}d`}
                       </div>
                     </Link>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {openTasks.length > 0 && (
+            <div className="bg-surface-2 rounded-xl border border-white/[0.06] shadow-card p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-sm font-semibold tracking-tight text-text">Open Tasks</h3>
+                  <p className="text-xs text-text/40 mt-0.5">By priority and due date</p>
+                </div>
+                <Link
+                  to="/tasks"
+                  className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"
+                >
+                  View all
+                </Link>
+              </div>
+              <div className="flex flex-col divide-y divide-white/[0.04]">
+                {openTasks.map((t) => {
+                  const isOverdue =
+                    t.due_date && new Date(t.due_date) < new Date()
+                  return (
+                    <div
+                      key={t.id}
+                      className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0 group"
+                    >
+                      <button
+                        onClick={() =>
+                          updateTask(t.id, { status: 'done' }).catch(() => {})
+                        }
+                        className="text-text/40 hover:text-primary"
+                      >
+                        <Square className="w-4 h-4" />
+                      </button>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-text truncate">{t.title}</div>
+                        <div className="text-[10px] text-text/40 truncate">
+                          {t.projects?.name || 'No project'}
+                          {t.due_date && (
+                            <>
+                              {' · '}
+                              <span className={isOverdue ? 'text-danger font-semibold' : ''}>
+                                {new Date(t.due_date).toLocaleDateString()}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded shrink-0 ${
+                          t.priority === 'high'
+                            ? 'bg-danger/10 text-danger'
+                            : t.priority === 'medium'
+                            ? 'bg-info/10 text-info'
+                            : 'bg-white/[0.04] text-text/40'
+                        }`}
+                      >
+                        {t.priority}
+                      </span>
+                    </div>
                   )
                 })}
               </div>

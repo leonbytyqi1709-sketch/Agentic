@@ -140,6 +140,74 @@ export interface ProjectWithClient extends Project {
 }
 
 // =========================================================
+// NOTES (v5)
+// =========================================================
+
+export type NoteColor = 'primary' | 'success' | 'warning' | 'info' | 'neutral'
+
+export interface Note {
+  id: string
+  user_id: string
+  title: string
+  content: string
+  pinned: boolean
+  color: NoteColor
+  created_at: string
+  updated_at: string
+}
+
+export interface NoteInsert {
+  title?: string
+  content?: string
+  pinned?: boolean
+  color?: NoteColor
+}
+
+export type NoteUpdate = Partial<NoteInsert>
+
+// =========================================================
+// EVENTS (v6 — Calendar)
+// =========================================================
+
+export type EventColor = 'primary' | 'success' | 'warning' | 'info' | 'neutral'
+
+export interface Event {
+  id: string
+  user_id: string
+  client_id: string | null
+  project_id: string | null
+  title: string
+  description: string
+  starts_at: string
+  ends_at: string | null
+  all_day: boolean
+  color: EventColor
+  /** Minutes before event for reminder; null = no reminder */
+  reminder_minutes: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface EventInsert {
+  title: string
+  starts_at: string
+  ends_at?: string | null
+  description?: string
+  client_id?: string | null
+  project_id?: string | null
+  all_day?: boolean
+  color?: EventColor
+  reminder_minutes?: number | null
+}
+
+export type EventUpdate = Partial<EventInsert>
+
+export interface EventWithRelations extends Event {
+  clients?: Pick<Client, 'name'> | null
+  projects?: Pick<Project, 'name'> | null
+}
+
+// =========================================================
 // TASKS (v2)
 // =========================================================
 

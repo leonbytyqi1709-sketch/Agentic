@@ -1,9 +1,34 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ComponentType } from 'react'
-import { Bell, Plus, Pencil, Trash2, FileText, CheckCircle2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import {
+  Bell,
+  Plus,
+  Pencil,
+  Trash2,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  FolderKanban,
+} from 'lucide-react'
 import { useActivities } from '../hooks/useActivities.js'
+import { useTasks } from '../hooks/useTasks.js'
+import { useProjects } from '../hooks/useProjects.js'
+import { useInvoices } from '../hooks/useInvoices.js'
+import { useEvents } from '../hooks/useEvents.js'
+import { CalendarClock } from 'lucide-react'
 import { cn } from '../lib/cn.js'
 import type { ActivityType } from '../types'
+
+interface DeadlineAlert {
+  id: string
+  icon: ComponentType<{ className?: string }>
+  title: string
+  sub: string
+  to: string
+  tone: 'danger' | 'warning' | 'info'
+}
 
 type IconComponent = ComponentType<{ className?: string }>
 
@@ -45,6 +70,10 @@ const STORAGE_KEY = 'cp-notif-seen'
 
 export default function NotificationsBell() {
   const { activities } = useActivities(15)
+  const { tasks } = useTasks()
+  const { projects } = useProjects()
+  const { invoices } = useInvoices()
+  const { events } = useEvents()
   const [open, setOpen] = useState<boolean>(false)
   const [lastSeen, setLastSeen] = useState<string>(
     () => localStorage.getItem(STORAGE_KEY) || '0'
@@ -60,9 +89,92 @@ export default function NotificationsBell() {
     return () => window.removeEventListener('mousedown', onClick)
   }, [])
 
-  const unread = activities.filter(
+  const alerts = useMemo<DeadlineAlert[]>(() => {
+    const now = new Date()
+    const soon = new Date()
+    soon.setDate(now.getDate() + 3)
+    const list: DeadlineAlert[] = []
+    invoices
+      .filter((i) => i.status === 'overdue')
+      .slice(0, 5)
+      .forEach((i) =>
+        list.push({
+          id: `inv-${i.id}`,
+          icon: FileText,
+          title: `Invoice ${i.number} overdue`,
+          sub: i.due_date ? `Due ${new Date(i.due_date).toLocaleDateString()}` : 'Overdue',
+          to: `/invoices/${i.id}`,
+          tone: 'danger',
+        })
+      )
+    projects
+      .filter(
+        (p) =>
+          p.due_date &&
+          p.status !== 'completed' &&
+          new Date(p.due_date) <= soon &&
+          new Date(p.due_date) >= new Date(now.toDateString())
+      )
+      .slice(0, 5)
+      .forEach((p) =>
+        list.push({
+          id: `prj-${p.id}`,
+          icon: FolderKanban,
+          title: p.name,
+          sub: `Due ${new Date(p.due_date!).toLocaleDateString()}`,
+          to: `/projects/${p.id}`,
+          tone: 'warning',
+        })
+      )
+    events
+      .filter((e) => {
+        const start = new Date(e.starts_at)
+        if (start < now) return false
+        const reminderMs = (e.reminder_minutes ?? 1440) * 60 * 1000
+        return start.getTime() - now.getTime() <= reminderMs
+      })
+      .slice(0, 5)
+      .forEach((e) => {
+        const start = new Date(e.starts_at)
+        list.push({
+          id: `evt-${e.id}`,
+          icon: CalendarClock,
+          title: e.title,
+          sub: e.all_day
+            ? start.toLocaleDateString()
+            : `${start.toLocaleDateString()} · ${start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+          to: '/calendar',
+          tone: 'info',
+        })
+      })
+    tasks
+      .filter(
+        (t) =>
+          t.status !== 'done' &&
+          t.due_date &&
+          new Date(t.due_date) <= soon
+      )
+      .slice(0, 5)
+      .forEach((t) => {
+        const overdue = new Date(t.due_date!) < new Date(now.toDateString())
+        list.push({
+          id: `tsk-${t.id}`,
+          icon: Clock,
+          title: t.title,
+          sub: overdue
+            ? `Overdue · ${new Date(t.due_date!).toLocaleDateString()}`
+            : `Due ${new Date(t.due_date!).toLocaleDateString()}`,
+          to: '/tasks',
+          tone: overdue ? 'danger' : 'warning',
+        })
+      })
+    return list
+  }, [invoices, projects, tasks, events])
+
+  const unreadActivities = activities.filter(
     (a) => new Date(a.created_at).getTime() > Number(lastSeen)
   ).length
+  const unread = unreadActivities + alerts.length
 
   function toggle() {
     setOpen((o) => !o)
@@ -93,7 +205,48 @@ export default function NotificationsBell() {
             <div className="text-xs text-text/40">Your recent activity</div>
           </div>
           <div className="max-h-96 overflow-y-auto">
-            {activities.length === 0 ? (
+            {alerts.length > 0 && (
+              <div>
+                <div className="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-text/40">
+                  Deadlines
+                </div>
+                {alerts.map((a) => {
+                  const Icon = a.icon
+                  return (
+                    <Link
+                      key={a.id}
+                      to={a.to}
+                      onClick={() => setOpen(false)}
+                      className="flex items-start gap-3 px-4 py-3 hover:bg-white/[0.02] border-b border-white/[0.04]"
+                    >
+                      <div
+                        className={cn(
+                          'w-7 h-7 rounded-md flex items-center justify-center shrink-0',
+                          a.tone === 'danger'
+                            ? 'bg-danger/10 text-danger'
+                            : a.tone === 'warning'
+                            ? 'bg-warning/10 text-warning'
+                            : 'bg-info/10 text-info'
+                        )}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-text font-semibold truncate flex items-center gap-1">
+                          {a.tone === 'danger' && <AlertCircle className="w-3 h-3 text-danger" />}
+                          {a.title}
+                        </div>
+                        <div className="text-[10px] text-text/50">{a.sub}</div>
+                      </div>
+                    </Link>
+                  )
+                })}
+                <div className="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-text/40 border-t border-white/[0.04]">
+                  Activity
+                </div>
+              </div>
+            )}
+            {activities.length === 0 && alerts.length === 0 ? (
               <div className="py-10 text-center text-sm text-text/40">Nothing yet</div>
             ) : (
               activities.map((a) => {
