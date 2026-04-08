@@ -175,15 +175,18 @@ export default function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] flex items-start justify-center pt-24 p-4 animate-fade-in"
+      className="fixed inset-0 z-[90] flex items-start justify-center pt-24 p-4 animate-fade-in"
       onClick={() => setOpen(false)}
     >
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-primary/15 rounded-full blur-[100px] pointer-events-none" />
       <div
-        className="w-full max-w-xl bg-surface-2 border border-white/[0.08] rounded-2xl shadow-card overflow-hidden"
+        className="relative w-full max-w-xl rounded-2xl border border-white/[0.1] shadow-card-lg overflow-hidden bg-gradient-to-b from-surface-3 to-surface-2 animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         <div className="flex items-center gap-3 px-4 h-14 border-b border-white/[0.06]">
-          <Search className="w-4 h-4 text-text/40" />
+          <Search className="w-4 h-4 text-primary" />
           <input
             ref={inputRef}
             value={query}
@@ -192,7 +195,7 @@ export default function CommandPalette() {
             placeholder="Search clients, projects, invoices... or run an action"
             className="flex-1 bg-transparent text-sm text-text placeholder:text-text/30 outline-none"
           />
-          <kbd className="text-[10px] text-text/40 border border-white/10 rounded px-1.5 py-0.5">
+          <kbd className="text-[10px] text-text/50 border border-white/10 bg-white/[0.04] rounded px-1.5 py-0.5 font-mono">
             ESC
           </kbd>
         </div>

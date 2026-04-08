@@ -5,6 +5,7 @@ import AppLayout from '../components/layout/AppLayout.js'
 import Button from '../components/ui/Button.js'
 import Input from '../components/ui/Input.js'
 import Modal from '../components/ui/Modal.js'
+import EmptyState from '../components/ui/EmptyState.js'
 import { useExpenses } from '../hooks/useExpenses.js'
 import { useProjects } from '../hooks/useProjects.js'
 import { useClients } from '../hooks/useClients.js'
@@ -204,16 +205,16 @@ export default function Expenses() {
       {loading ? (
         <div className="text-sm text-text/50">Loading...</div>
       ) : expenses.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-surface-2 border border-white/[0.06] flex items-center justify-center mb-5">
-            <Receipt className="w-7 h-7 text-text/40" />
-          </div>
-          <h3 className="text-lg font-bold tracking-tight text-text mb-1">No expenses yet</h3>
-          <p className="text-sm text-text/50 mb-6">Track your business expenses</p>
-          <Button onClick={openCreate}>
-            <Plus className="w-4 h-4" /> Add Expense
-          </Button>
-        </div>
+        <EmptyState
+          icon={Receipt}
+          title="No expenses yet"
+          description="Track every business expense and see your real profit at a glance."
+          action={
+            <Button onClick={openCreate} size="lg">
+              <Plus className="w-4 h-4" /> Add Expense
+            </Button>
+          }
+        />
       ) : (
         <div className="bg-surface-2 rounded-xl border border-white/[0.06] shadow-card overflow-hidden">
           <table className="w-full text-sm">

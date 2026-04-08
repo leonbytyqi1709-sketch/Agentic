@@ -62,23 +62,45 @@ interface StatCardProps {
   value: string | number
   sub?: string
   accent?: boolean
+  trend?: 'up' | 'down' | null
 }
 
 function StatCard({ icon: Icon, label, value, sub, accent = false }: StatCardProps) {
   return (
-    <div className="bg-surface-2 rounded-xl border border-white/[0.06] shadow-card p-5">
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-xs text-text/40 font-medium uppercase tracking-wide">{label}</span>
+    <div className="card card-hover p-6 relative overflow-hidden group">
+      {/* Background gradient accent */}
+      {accent && (
+        <div className="absolute inset-0 bg-gradient-primary-soft opacity-60 pointer-events-none" />
+      )}
+      {/* Corner decoration */}
+      <div
+        className={`absolute -top-8 -right-8 w-32 h-32 rounded-full blur-3xl pointer-events-none transition-opacity duration-300 ${
+          accent
+            ? 'bg-primary/20 opacity-100'
+            : 'bg-white/[0.04] opacity-60 group-hover:opacity-100'
+        }`}
+      />
+
+      <div className="relative flex items-start justify-between mb-5">
+        <span className="text-[10px] text-text/40 font-semibold uppercase tracking-widest">
+          {label}
+        </span>
         <div
-          className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-            accent ? 'bg-primary/10 text-primary' : 'bg-white/5 text-text/60'
+          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${
+            accent
+              ? 'bg-gradient-to-br from-primary to-primary-dark text-white shadow-glow-primary'
+              : 'bg-white/[0.04] border border-white/[0.08] text-text/70'
           }`}
         >
-          <Icon className="w-4 h-4" />
+          <Icon className="w-5 h-5" />
         </div>
       </div>
-      <div className="text-2xl font-bold tracking-tight text-text">{value}</div>
-      {sub && <div className="text-xs text-text/40 mt-1">{sub}</div>}
+      <div className="relative text-4xl font-bold tracking-tight text-text leading-none">
+        {value}
+      </div>
+      {sub && (
+        <div className="relative text-xs text-text/45 mt-2 font-medium">{sub}</div>
+      )}
     </div>
   )
 }

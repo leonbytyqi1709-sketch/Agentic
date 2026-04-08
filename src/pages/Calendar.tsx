@@ -97,73 +97,88 @@ export default function Calendar() {
 
   return (
     <AppLayout title="Calendar">
-      <div className="bg-surface-2 rounded-xl border border-white/[0.06] shadow-card p-5">
-        <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+      <div className="card p-6 relative overflow-hidden">
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative flex items-center justify-between mb-6 flex-wrap gap-3">
           <div className="flex items-center gap-2">
             <button
               onClick={() => shift(-1)}
-              className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10"
+              className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.08] hover:border-white/[0.14] active:scale-95 transition-all"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => shift(1)}
-              className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10"
+              className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.08] hover:border-white/[0.14] active:scale-95 transition-all"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
             <button
               onClick={goToday}
-              className="h-9 px-3 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold uppercase text-text/70 hover:bg-white/10"
+              className="h-9 px-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-[10px] font-bold uppercase tracking-widest text-text/70 hover:bg-primary/10 hover:border-primary/30 hover:text-primary active:scale-95 transition-all"
             >
               Today
             </button>
           </div>
-          <h2 className="text-lg font-bold tracking-tight text-text">
-            {MONTHS[month]} {year}
+          <h2 className="text-2xl font-bold tracking-tight text-text">
+            {MONTHS[month]} <span className="text-text/40">{year}</span>
           </h2>
-          <div className="flex items-center gap-3 text-xs text-text/50">
+          <div className="flex items-center gap-4 text-[11px] text-text/60">
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-primary" /> Project
+              <span className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(225,29,72,0.6)]" />
+              <span className="font-medium">Project</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-blue-400" /> Invoice
+              <span className="w-2 h-2 rounded-full bg-info shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+              <span className="font-medium">Invoice</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-green-400" /> Recurring
+              <span className="w-2 h-2 rounded-full bg-success shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              <span className="font-medium">Recurring</span>
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-1 mb-2">
+        <div className="relative grid grid-cols-7 gap-1.5 mb-2">
           {DAYS.map((d) => (
-            <div key={d} className="text-[10px] font-semibold uppercase tracking-wide text-text/40 text-center py-1">
+            <div
+              key={d}
+              className="text-[10px] font-bold uppercase tracking-widest text-text/35 text-center py-2"
+            >
               {d}
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-1">
+        <div className="relative grid grid-cols-7 gap-1.5">
           {cells.map((day, idx) => {
-            if (!day) return <div key={idx} className="min-h-[90px] rounded-lg bg-transparent" />
+            if (!day) return <div key={idx} className="min-h-[96px] rounded-lg bg-transparent" />
             const key = day.toISOString().slice(0, 10)
             const dayEvents = events[key] || []
             const isToday = key === today
+            const isPast = key < today
             return (
               <div
                 key={key}
                 className={cn(
-                  'min-h-[90px] rounded-lg border border-white/[0.04] p-1.5 flex flex-col gap-1',
-                  isToday ? 'bg-primary/5 border-primary/30' : 'bg-white/[0.02]'
+                  'min-h-[96px] rounded-xl border p-2 flex flex-col gap-1 transition-all hover:border-white/[0.14] hover:-translate-y-[1px]',
+                  isToday
+                    ? 'bg-primary/[0.08] border-primary/40 shadow-[0_0_24px_rgba(225,29,72,0.15)]'
+                    : isPast
+                    ? 'bg-white/[0.01] border-white/[0.04]'
+                    : 'bg-white/[0.02] border-white/[0.05]'
                 )}
               >
                 <div
                   className={cn(
-                    'text-xs font-semibold',
-                    isToday ? 'text-primary' : 'text-text/60'
+                    'text-xs font-bold flex items-center justify-between',
+                    isToday ? 'text-primary' : isPast ? 'text-text/30' : 'text-text/70'
                   )}
                 >
-                  {day.getDate()}
+                  <span>{day.getDate()}</span>
+                  {isToday && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(225,29,72,0.8)]" />
+                  )}
                 </div>
                 <div className="flex flex-col gap-1 overflow-hidden">
                   {dayEvents.slice(0, 3).map((e) => (

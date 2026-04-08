@@ -12,6 +12,7 @@ import { toast } from '../store/toastStore.js'
 import { cn } from '../lib/cn.js'
 import ProjectProgress from '../components/ProjectProgress.js'
 import TagPicker, { TagBadges } from '../components/TagPicker.js'
+import EmptyState from '../components/ui/EmptyState.js'
 import type { ProjectInsert, ProjectStatus, ProjectWithClient } from '../types'
 
 const STATUS_STYLES: Record<ProjectStatus, string> = {
@@ -221,17 +222,17 @@ export default function Projects() {
       {loading ? (
         <div className="text-sm text-text/50">Loading...</div>
       ) : projects.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-surface-2 border border-white/[0.06] flex items-center justify-center mb-5">
-            <FolderKanban className="w-7 h-7 text-text/40" />
-          </div>
-          <h3 className="text-lg font-bold tracking-tight text-text mb-1">Noch keine Projekte</h3>
-          <p className="text-sm text-text/50 mb-6">Lege dein erstes Projekt an</p>
-          <Button onClick={openCreate}>
-            <Plus className="w-4 h-4" />
-            New Project
-          </Button>
-        </div>
+        <EmptyState
+          icon={FolderKanban}
+          title="Noch keine Projekte"
+          description="Lege dein erstes Projekt an und verwalte Budgets, Tasks und Deadlines an einem Ort."
+          action={
+            <Button onClick={openCreate} size="lg">
+              <Plus className="w-4 h-4" />
+              New Project
+            </Button>
+          }
+        />
       ) : filtered.length === 0 ? (
         <div className="text-sm text-text/50 text-center py-12">
           Keine Treffer für „{search}"
@@ -241,7 +242,7 @@ export default function Projects() {
           {filtered.map((project) => (
             <div
               key={project.id}
-              className="bg-surface-2 rounded-xl border border-white/[0.06] shadow-card p-5 flex flex-col gap-4"
+              className="card card-hover p-5 flex flex-col gap-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">

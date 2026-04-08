@@ -10,6 +10,7 @@ import { useClients } from '../hooks/useClients.js'
 import { toast } from '../store/toastStore.js'
 import { cn } from '../lib/cn.js'
 import TagPicker, { TagBadges } from '../components/TagPicker.js'
+import EmptyState from '../components/ui/EmptyState.js'
 import { useFilterStore } from '../store/filterStore.js'
 import type { Client, ClientInsert, ClientStatus } from '../types'
 import type {
@@ -273,17 +274,17 @@ export default function Clients() {
       {loading ? (
         <div className="text-sm text-text/50">Loading...</div>
       ) : clients.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-surface-2 border border-white/[0.06] flex items-center justify-center mb-5">
-            <Users className="w-7 h-7 text-text/40" />
-          </div>
-          <h3 className="text-lg font-bold tracking-tight text-text mb-1">Noch keine Clients</h3>
-          <p className="text-sm text-text/50 mb-6">Füge deinen ersten Client hinzu</p>
-          <Button onClick={openCreate}>
-            <Plus className="w-4 h-4" />
-            New Client
-          </Button>
-        </div>
+        <EmptyState
+          icon={Users}
+          title="Noch keine Clients"
+          description="Füge deinen ersten Client hinzu und behalte den Überblick über alle Beziehungen."
+          action={
+            <Button onClick={openCreate} size="lg">
+              <Plus className="w-4 h-4" />
+              New Client
+            </Button>
+          }
+        />
       ) : filtered.length === 0 ? (
         <div className="text-sm text-text/50 text-center py-12">
           Keine Treffer für „{search}"
@@ -294,10 +295,9 @@ export default function Clients() {
             <div
               key={client.id}
               className={cn(
-                'bg-surface-2 rounded-xl border shadow-card p-5 flex flex-col gap-4 transition-colors',
-                selected.includes(client.id)
-                  ? 'border-primary/40 ring-1 ring-primary/20'
-                  : 'border-white/[0.06]'
+                'card card-hover p-5 flex flex-col gap-4',
+                selected.includes(client.id) &&
+                  '!border-primary/40 ring-1 ring-primary/20'
               )}
             >
               <div className="flex items-start gap-4">

@@ -6,6 +6,8 @@ import AppLayout from '../components/layout/AppLayout.js'
 import Button from '../components/ui/Button.js'
 import Modal from '../components/ui/Modal.js'
 import InvoiceForm from '../components/InvoiceForm.js'
+import EmptyState from '../components/ui/EmptyState.js'
+import Badge from '../components/ui/Badge.js'
 import { useInvoices } from '../hooks/useInvoices.js'
 import { useClients } from '../hooks/useClients.js'
 import { useProjects } from '../hooks/useProjects.js'
@@ -150,57 +152,60 @@ export default function Invoices() {
       {loading ? (
         <div className="text-sm text-text/50">Loading...</div>
       ) : invoices.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-surface-2 border border-white/[0.06] flex items-center justify-center mb-5">
-            <FileText className="w-7 h-7 text-text/40" />
-          </div>
-          <h3 className="text-lg font-bold tracking-tight text-text mb-1">No invoices yet</h3>
-          <p className="text-sm text-text/50 mb-6">Create your first invoice</p>
-          <Button onClick={openCreate}>
-            <Plus className="w-4 h-4" /> New Invoice
-          </Button>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title="No invoices yet"
+          description="Create your first invoice and get paid faster with automated PDF exports and share links."
+          action={
+            <Button onClick={openCreate} size="lg">
+              <Plus className="w-4 h-4" /> New Invoice
+            </Button>
+          }
+        />
       ) : (
-        <div className="bg-surface-2 rounded-xl border border-white/[0.06] shadow-card overflow-hidden">
+        <div className="card overflow-hidden !p-0">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-white/[0.02] border-b border-white/[0.06] text-xs uppercase tracking-wide text-text/40">
+            <thead className="bg-white/[0.02] border-b border-white/[0.06] text-[10px] uppercase tracking-widest text-text/35">
               <tr>
-                <th className="text-left px-5 py-3 font-medium">Number</th>
-                <th className="text-left px-5 py-3 font-medium">Client</th>
-                <th className="text-left px-5 py-3 font-medium">Status</th>
-                <th className="text-left px-5 py-3 font-medium">Issued</th>
-                <th className="text-left px-5 py-3 font-medium">Due</th>
-                <th className="text-right px-5 py-3 font-medium">Total</th>
-                <th className="text-right px-5 py-3 font-medium"></th>
+                <th className="text-left px-6 py-4 font-semibold">Number</th>
+                <th className="text-left px-6 py-4 font-semibold">Client</th>
+                <th className="text-left px-6 py-4 font-semibold">Status</th>
+                <th className="text-left px-6 py-4 font-semibold">Issued</th>
+                <th className="text-left px-6 py-4 font-semibold">Due</th>
+                <th className="text-right px-6 py-4 font-semibold">Total</th>
+                <th className="text-right px-6 py-4 font-semibold"></th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((inv) => {
                 const Icon = STATUS_ICONS[inv.status as InvoiceStatus] || FileText
+                const tone =
+                  inv.status === 'paid'
+                    ? 'success'
+                    : inv.status === 'overdue'
+                    ? 'danger'
+                    : inv.status === 'sent'
+                    ? 'info'
+                    : 'neutral'
                 return (
                   <tr
                     key={inv.id}
-                    className="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.02] transition-colors"
+                    className="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.02] transition-colors group"
                   >
-                    <td className="px-5 py-3 font-mono font-semibold text-text">{inv.number}</td>
-                    <td className="px-5 py-3 text-text/80">
+                    <td className="px-6 py-4 font-mono font-semibold text-text">{inv.number}</td>
+                    <td className="px-6 py-4 text-text/80">
                       {inv.clients?.name || <span className="text-text/30">—</span>}
                     </td>
-                    <td className="px-5 py-3">
-                      <span
-                        className={cn(
-                          'inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-md',
-                          STATUS_STYLES[inv.status as InvoiceStatus]
-                        )}
-                      >
-                        <Icon className="w-3 h-3" />
+                    <td className="px-6 py-4">
+                      <Badge tone={tone} icon={Icon}>
                         {inv.status}
-                      </span>
+                      </Badge>
                     </td>
-                    <td className="px-5 py-3 text-text/60">{fmtDate(inv.issue_date)}</td>
-                    <td className="px-5 py-3 text-text/60">{fmtDate(inv.due_date)}</td>
-                    <td className="px-5 py-3 text-right font-semibold text-text">{fmtMoney(inv.total)}</td>
-                    <td className="px-5 py-3 text-right">
+                    <td className="px-6 py-4 text-text/60">{fmtDate(inv.issue_date)}</td>
+                    <td className="px-6 py-4 text-text/60">{fmtDate(inv.due_date)}</td>
+                    <td className="px-6 py-4 text-right font-semibold text-text tabular-nums">{fmtMoney(inv.total)}</td>
+                    <td className="px-6 py-4 text-right">
                       <div className="inline-flex items-center gap-1">
                         <Link
                           to={`/invoices/${inv.id}`}
@@ -227,6 +232,7 @@ export default function Invoices() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

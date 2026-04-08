@@ -12,36 +12,54 @@ const ICONS: Record<ToastType, IconComponent> = {
   info: Info,
 }
 
-const STYLES: Record<ToastType, string> = {
-  success: 'border-green-500/30 bg-green-500/10 text-green-300',
-  error: 'border-red-500/30 bg-red-500/10 text-red-300',
-  info: 'border-white/10 bg-surface-2 text-text',
+const BORDER_STYLES: Record<ToastType, string> = {
+  success: 'border-success/30',
+  error: 'border-danger/30',
+  info: 'border-white/[0.1]',
+}
+
+const ICON_STYLES: Record<ToastType, string> = {
+  success: 'text-success bg-success-bg',
+  error: 'text-danger bg-danger-bg',
+  info: 'text-primary bg-primary/10',
 }
 
 export default function Toaster() {
   const { toasts, dismiss } = useToastStore()
   return (
-    <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
+    <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none max-w-sm">
       {toasts.map((t) => {
         const Icon = ICONS[t.type] || Info
         return (
           <div
             key={t.id}
             className={cn(
-              'pointer-events-auto flex items-start gap-3 min-w-[280px] max-w-sm rounded-xl border backdrop-blur-xl shadow-card px-4 py-3 text-sm animate-slide-in',
-              STYLES[t.type]
+              'pointer-events-auto flex items-start gap-3 min-w-[300px] rounded-xl border',
+              'glass shadow-card-lg px-4 py-3 text-sm animate-slide-in-right',
+              BORDER_STYLES[t.type]
             )}
           >
-            <Icon className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1 min-w-0">
-              {t.title && (
-                <div className="font-semibold text-text">{t.title}</div>
+            <div
+              className={cn(
+                'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5',
+                'border border-white/[0.08]',
+                ICON_STYLES[t.type]
               )}
-              <div className="text-text/80">{t.message}</div>
+            >
+              <Icon className="w-4 h-4" />
+            </div>
+            <div className="flex-1 min-w-0 pt-0.5">
+              {t.title && (
+                <div className="font-semibold text-text leading-tight mb-0.5">
+                  {t.title}
+                </div>
+              )}
+              <div className="text-text/80 leading-snug">{t.message}</div>
             </div>
             <button
               onClick={() => dismiss(t.id)}
-              className="text-text/40 hover:text-text shrink-0"
+              className="text-text/40 hover:text-text shrink-0 p-1 -m-1 rounded transition-colors"
+              aria-label="Dismiss"
             >
               <X className="w-3.5 h-3.5" />
             </button>

@@ -5,6 +5,7 @@ import AppLayout from '../components/layout/AppLayout.js'
 import Button from '../components/ui/Button.js'
 import Input from '../components/ui/Input.js'
 import Modal from '../components/ui/Modal.js'
+import EmptyState from '../components/ui/EmptyState.js'
 import { useRecurringInvoices } from '../hooks/useRecurringInvoices.js'
 import { useClients } from '../hooks/useClients.js'
 import { useProjects } from '../hooks/useProjects.js'
@@ -158,16 +159,16 @@ export default function Recurring() {
       {loading ? (
         <div className="text-sm text-text/50">Loading...</div>
       ) : recurring.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-surface-2 border border-white/[0.06] flex items-center justify-center mb-5">
-            <Repeat className="w-7 h-7 text-text/40" />
-          </div>
-          <h3 className="text-lg font-bold tracking-tight text-text mb-1">No recurring invoices</h3>
-          <p className="text-sm text-text/50 mb-6">Set up automatic billing for subscriptions</p>
-          <Button onClick={openCreate}>
-            <Plus className="w-4 h-4" /> New Recurring
-          </Button>
-        </div>
+        <EmptyState
+          icon={Repeat}
+          title="No recurring invoices"
+          description="Set up automatic billing once and watch invoices generate themselves every month."
+          action={
+            <Button onClick={openCreate} size="lg">
+              <Plus className="w-4 h-4" /> New Recurring
+            </Button>
+          }
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {recurring.map((r) => {
