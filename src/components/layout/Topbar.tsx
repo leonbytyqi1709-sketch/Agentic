@@ -22,7 +22,7 @@ export default function Topbar({ title, onMenu }: TopbarProps) {
       <div className="flex items-center gap-3 min-w-0">
         <button
           onClick={onMenu}
-          className="lg:hidden w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-text/70 hover:bg-white/[0.08] active:scale-95 transition-all"
+          className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-text/70 hover:bg-white/[0.08] active:scale-95 transition-all"
         >
           <Menu className="w-4 h-4" />
         </button>
