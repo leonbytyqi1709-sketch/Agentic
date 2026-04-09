@@ -9,7 +9,6 @@ const MAP: Record<string, string> = {
   n: '/notes',
   m: '/inbox',
   k: '/calendar',
-  r: '/reports',
   s: '/settings',
 }
 

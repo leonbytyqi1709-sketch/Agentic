@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   FolderKanban,
   FileText,
-  BarChart3,
   Receipt,
   LayoutTemplate,
   Calendar as CalendarIcon,
@@ -40,7 +39,6 @@ const nav: NavItem[] = [
   { to: '/templates', label: 'Templates', icon: LayoutTemplate },
   { to: '/invoices', label: 'Invoices', icon: FileText },
   { to: '/expenses', label: 'Expenses', icon: Receipt },
-  { to: '/reports', label: 'Reports', icon: BarChart3 },
   { to: '/settings', label: 'Settings', icon: SettingsIcon },
 ]
 
