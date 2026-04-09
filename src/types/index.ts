@@ -166,6 +166,73 @@ export interface NoteInsert {
 export type NoteUpdate = Partial<NoteInsert>
 
 // =========================================================
+// QUOTES (v8 — Angebote)
+// =========================================================
+
+export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined' | 'expired'
+
+export interface Quote {
+  id: string
+  user_id: string
+  client_id: string | null
+  project_id: string | null
+  number: string
+  status: QuoteStatus
+  issue_date: string | null
+  valid_until: string | null
+  subtotal: number
+  tax_rate: number
+  tax_amount: number
+  total: number
+  notes: string | null
+  converted_invoice_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface QuoteInsert {
+  number?: string
+  client_id?: string | null
+  project_id?: string | null
+  status?: QuoteStatus
+  issue_date?: string | null
+  valid_until?: string | null
+  subtotal?: number
+  tax_rate?: number
+  tax_amount?: number
+  total?: number
+  notes?: string | null
+}
+
+export type QuoteUpdate = Partial<QuoteInsert> & {
+  converted_invoice_id?: string | null
+}
+
+export interface QuoteWithRelations extends Quote {
+  clients?: Pick<Client, 'name' | 'company' | 'email'> | null
+  projects?: Pick<Project, 'name'> | null
+}
+
+export interface QuoteItem {
+  id: string
+  quote_id: string
+  description: string
+  quantity: number
+  unit_price: number
+  amount: number
+  position: number
+}
+
+export interface QuoteItemInsert {
+  description: string
+  quote_id?: string
+  quantity?: number
+  unit_price?: number
+  amount?: number
+  position?: number
+}
+
+// =========================================================
 // EMAIL PINS (v7 — Gmail)
 // =========================================================
 
