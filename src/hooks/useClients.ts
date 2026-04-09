@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   useQuery,
   useMutation,
@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase.js'
 import { useAuthStore } from '../store/authStore.js'
+import { useRealtimeSync } from './useRealtimeSync.js'
 import { logActivity } from '../lib/activity.js'
 import type {
   Client,
@@ -69,8 +70,12 @@ export function useClients({
   const clients: Client[] = query.data?.rows ?? []
   const totalCount: number = query.data?.count ?? 0
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ['clients', user?.id] })
+  const invalidate = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ['clients', user?.id] }),
+    [queryClient, user?.id]
+  )
+
+  useRealtimeSync('clients', invalidate)
 
   const createMutation = useMutation<Client, Error, ClientInsert>({
     mutationFn: async (payload) => {

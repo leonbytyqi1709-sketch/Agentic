@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { useAuthStore } from '../store/authStore.js'
+import { useRealtimeSync } from './useRealtimeSync.js'
 import type { Note, NoteInsert, NoteUpdate } from '../types'
 
 export interface UseNotesResult {
@@ -33,6 +34,8 @@ export function useNotes(): UseNotesResult {
   useEffect(() => {
     fetch()
   }, [fetch])
+
+  useRealtimeSync('notes', fetch)
 
   const createNote = useCallback(
     async (payload: NoteInsert = {}): Promise<Note> => {

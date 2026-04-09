@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { useAuthStore } from '../store/authStore.js'
 import { logActivity } from '../lib/activity.js'
+import { useRealtimeSync } from './useRealtimeSync.js'
 import type { ExpenseInsert, ExpenseUpdate, ExpenseWithRelations } from '../types'
 
 export interface UseExpensesResult {
@@ -33,6 +34,8 @@ export function useExpenses(): UseExpensesResult {
   useEffect(() => {
     fetch()
   }, [fetch])
+
+  useRealtimeSync('expenses', fetch)
 
   const createExpense = async (
     payload: ExpenseInsert

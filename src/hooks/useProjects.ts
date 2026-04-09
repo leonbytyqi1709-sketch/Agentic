@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   useQuery,
   useMutation,
@@ -8,6 +8,7 @@ import {
 import { supabase } from '../lib/supabase.js'
 import { useAuthStore } from '../store/authStore.js'
 import { logActivity } from '../lib/activity.js'
+import { useRealtimeSync } from './useRealtimeSync.js'
 import type {
   ProjectInsert,
   ProjectUpdate,
@@ -72,8 +73,12 @@ export function useProjects({
   const projects: ProjectWithClient[] = query.data?.rows ?? []
   const totalCount: number = query.data?.count ?? 0
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ['projects', user?.id] })
+  const invalidate = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ['projects', user?.id] }),
+    [queryClient, user?.id]
+  )
+
+  useRealtimeSync('projects', invalidate)
 
   const createMutation = useMutation<ProjectWithClient, Error, ProjectInsert>({
     mutationFn: async (payload) => {

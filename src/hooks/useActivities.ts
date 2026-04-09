@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { useAuthStore } from '../store/authStore.js'
+import { useRealtimeSync } from './useRealtimeSync.js'
 import type { Activity } from '../types'
 
 export interface UseActivitiesResult {
@@ -29,6 +30,8 @@ export function useActivities(limit: number = 15): UseActivitiesResult {
   useEffect(() => {
     fetch()
   }, [fetch])
+
+  useRealtimeSync('activities', fetch, `limit-${limit}`)
 
   return { activities, loading, refetch: fetch }
 }

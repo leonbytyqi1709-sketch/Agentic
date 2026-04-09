@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   useQuery,
   useMutation,
@@ -8,6 +8,7 @@ import {
 import { supabase } from '../lib/supabase.js'
 import { useAuthStore } from '../store/authStore.js'
 import { logActivity } from '../lib/activity.js'
+import { useRealtimeSync } from './useRealtimeSync.js'
 import type {
   Invoice,
   InvoiceInsert,
@@ -99,8 +100,12 @@ export function useInvoices({
   const invoices: InvoiceWithRelations[] = query.data?.rows ?? []
   const totalCount: number = query.data?.count ?? 0
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ['invoices', user?.id] })
+  const invalidate = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ['invoices', user?.id] }),
+    [queryClient, user?.id]
+  )
+
+  useRealtimeSync('invoices', invalidate)
 
   const generateInvoiceNumber = async (): Promise<string> => {
     if (!supabase || !user) throw new Error('Not authenticated')

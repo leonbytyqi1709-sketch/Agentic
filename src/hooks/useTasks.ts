@@ -49,7 +49,12 @@ export function useTasks(projectId?: string): UseTasksResult {
       .channel(`tasks-${projectId || 'all'}-${instanceId}`)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'tasks' },
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+          filter: `user_id=eq.${user.id}`,
+        },
         () => fetchTasks()
       )
       .subscribe()

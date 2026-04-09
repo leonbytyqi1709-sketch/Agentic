@@ -39,7 +39,12 @@ export function useEvents(): UseEventsResult {
       .channel(`events-${instanceId}`)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'events' },
+        {
+          event: '*',
+          schema: 'public',
+          table: 'events',
+          filter: `user_id=eq.${user.id}`,
+        },
         () => fetch()
       )
       .subscribe()

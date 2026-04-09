@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { useAuthStore } from '../store/authStore.js'
+import { useRealtimeSync } from './useRealtimeSync.js'
 import type { TimeEntryInsert, TimeEntryWithProject } from '../types'
 
 export interface UseTimeEntriesResult {
@@ -33,6 +34,8 @@ export function useTimeEntries(projectId?: string): UseTimeEntriesResult {
   useEffect(() => {
     fetchEntries()
   }, [fetchEntries])
+
+  useRealtimeSync('time_entries', fetchEntries, projectId || 'all')
 
   const createEntry = async (
     payload: TimeEntryInsert
