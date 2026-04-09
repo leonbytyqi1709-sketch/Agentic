@@ -21,6 +21,7 @@ import Templates from './pages/Templates.js'
 import Calendar from './pages/Calendar.js'
 import Tasks from './pages/Tasks.js'
 import Notes from './pages/Notes.js'
+import Inbox from './pages/Inbox.js'
 import PublicInvoice from './pages/PublicInvoice.js'
 import Settings from './pages/Settings.js'
 
@@ -53,6 +54,7 @@ export default function App() {
         <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
         <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
         <Route path="/notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
+        <Route path="/inbox" element={<ProtectedRoute><Inbox /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="/i/:token" element={<PublicInvoice />} />
       </Routes>

@@ -166,6 +166,37 @@ export interface NoteInsert {
 export type NoteUpdate = Partial<NoteInsert>
 
 // =========================================================
+// EMAIL PINS (v7 — Gmail)
+// =========================================================
+
+export interface EmailPin {
+  id: string
+  user_id: string
+  client_id: string | null
+  project_id: string | null
+  gmail_message_id: string
+  gmail_thread_id: string | null
+  from_email: string | null
+  from_name: string | null
+  subject: string | null
+  snippet: string | null
+  message_date: string | null
+  pinned_at: string
+}
+
+export interface EmailPinInsert {
+  client_id?: string | null
+  project_id?: string | null
+  gmail_message_id: string
+  gmail_thread_id?: string | null
+  from_email?: string | null
+  from_name?: string | null
+  subject?: string | null
+  snippet?: string | null
+  message_date?: string | null
+}
+
+// =========================================================
 // EVENTS (v6 — Calendar)
 // =========================================================
 
