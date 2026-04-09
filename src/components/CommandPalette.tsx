@@ -71,7 +71,6 @@ export default function CommandPalette() {
   const actions: CommandItem[] = useMemo(
     () => [
       { id: 'nav-dash', label: 'Go to Dashboard', icon: LayoutDashboard, kind: 'Action', action: () => navigate('/dashboard') },
-      { id: 'nav-clients', label: 'Go to Clients', icon: Users, kind: 'Action', action: () => navigate('/clients') },
       { id: 'nav-projects', label: 'Go to Projects', icon: FolderKanban, kind: 'Action', action: () => navigate('/projects') },
       { id: 'nav-calendar', label: 'Go to Calendar', icon: CalendarIcon, kind: 'Action', action: () => navigate('/calendar') },
       { id: 'nav-tasks', label: 'Go to Tasks', icon: CheckSquare, kind: 'Action', action: () => navigate('/tasks') },
@@ -84,7 +83,6 @@ export default function CommandPalette() {
       { id: 'nav-expenses', label: 'Go to Expenses', icon: Receipt, kind: 'Action', action: () => navigate('/expenses') },
       { id: 'nav-reports', label: 'Go to Reports', icon: BarChart3, kind: 'Action', action: () => navigate('/reports') },
       { id: 'nav-settings', label: 'Go to Settings', icon: SettingsIcon, kind: 'Action', action: () => navigate('/settings') },
-      { id: 'new-client', label: 'New Client', icon: Plus, kind: 'Action', action: () => navigate('/clients') },
       { id: 'new-project', label: 'New Project', icon: Plus, kind: 'Action', action: () => navigate('/projects') },
       { id: 'new-invoice', label: 'New Invoice', icon: Plus, kind: 'Action', action: () => navigate('/invoices') },
       { id: 'sign-out', label: 'Sign out', icon: LogOut, kind: 'Action', action: () => signOut() },
@@ -104,24 +102,6 @@ export default function CommandPalette() {
     actions
       .filter((a) => a.label.toLowerCase().includes(q))
       .forEach((a) => list.push(a))
-
-    clients
-      .filter(
-        (c) =>
-          c.name?.toLowerCase().includes(q) ||
-          c.company?.toLowerCase().includes(q)
-      )
-      .slice(0, 5)
-      .forEach((c) =>
-        list.push({
-          id: `c-${c.id}`,
-          label: c.name,
-          sub: c.company,
-          icon: Users,
-          kind: 'Client',
-          action: () => navigate(`/clients/${c.id}`),
-        })
-      )
 
     projects
       .filter((p) => p.name?.toLowerCase().includes(q))

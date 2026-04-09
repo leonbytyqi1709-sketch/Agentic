@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 
 const MAP: Record<string, string> = {
   d: '/dashboard',
-  c: '/clients',
   p: '/projects',
   i: '/invoices',
   q: '/quotes',
