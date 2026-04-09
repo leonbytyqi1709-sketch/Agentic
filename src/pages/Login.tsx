@@ -69,6 +69,14 @@ export default function Login() {
                 {error}
               </div>
             )}
+            <div className="flex items-center justify-end -mt-1">
+              <Link
+                to="/forgot-password"
+                className="text-xs text-text/50 hover:text-primary font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <Button type="submit" className="mt-2 w-full h-11" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign in'}
             </Button>

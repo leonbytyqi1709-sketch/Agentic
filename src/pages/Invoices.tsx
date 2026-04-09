@@ -12,6 +12,7 @@ import { useInvoices } from '../hooks/useInvoices.js'
 import { useClients } from '../hooks/useClients.js'
 import { useProjects } from '../hooks/useProjects.js'
 import { toast } from '../store/toastStore.js'
+import { undoableDelete } from '../lib/undoDelete.js'
 import { cn } from '../lib/cn.js'
 import type {
   InvoiceInsert,
@@ -58,17 +59,19 @@ export default function Invoices() {
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [editing, setEditing] = useState<InvoiceWithRelations | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<InvoiceWithRelations | null>(null)
+  const [hiddenIds, setHiddenIds] = useState<string[]>([])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    if (!q) return invoices
-    return invoices.filter(
+    const visible = invoices.filter((i) => !hiddenIds.includes(i.id))
+    if (!q) return visible
+    return visible.filter(
       (i) =>
         i.number?.toLowerCase().includes(q) ||
         i.clients?.name?.toLowerCase().includes(q) ||
         i.projects?.name?.toLowerCase().includes(q)
     )
-  }, [invoices, search])
+  }, [invoices, search, hiddenIds])
 
   const stats = useMemo(() => {
     const total = invoices.reduce((s, i) => s + Number(i.total || 0), 0)
@@ -101,15 +104,16 @@ export default function Invoices() {
     }
   }
 
-  async function handleDelete() {
+  function handleDelete() {
     if (!deleteTarget) return
-    try {
-      await deleteInvoice(deleteTarget.id)
-      toast.success('Invoice deleted')
-      setDeleteTarget(null)
-    } catch (err) {
-      toast.error((err as Error).message)
-    }
+    const target = deleteTarget
+    setDeleteTarget(null)
+    undoableDelete({
+      entityLabel: `Invoice ${target.number}`,
+      onHide: () => setHiddenIds((prev) => [...prev, target.id]),
+      onRestore: () => setHiddenIds((prev) => prev.filter((x) => x !== target.id)),
+      onCommit: () => deleteInvoice(target.id),
+    })
   }
 
   return (

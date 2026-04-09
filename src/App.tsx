@@ -4,9 +4,12 @@ import { useAuthStore } from './store/authStore.js'
 import ProtectedRoute from './components/ProtectedRoute.js'
 import Toaster from './components/ui/Toaster.js'
 import CommandPalette from './components/CommandPalette.js'
+import ShortcutsHelp from './components/ShortcutsHelp.js'
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts.js'
 import Login from './pages/Login.js'
 import Register from './pages/Register.js'
+import ForgotPassword from './pages/ForgotPassword.js'
+import ResetPassword from './pages/ResetPassword.js'
 import Dashboard from './pages/Dashboard.js'
 import Clients from './pages/Clients.js'
 import ClientDetail from './pages/ClientDetail.js'
@@ -41,6 +44,8 @@ export default function App() {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/clients" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
         <Route path="/clients/:id" element={<ProtectedRoute><ClientDetail /></ProtectedRoute>} />
@@ -62,6 +67,7 @@ export default function App() {
       </Routes>
       <Toaster />
       {user && <CommandPalette />}
+      {user && <ShortcutsHelp />}
     </>
   )
 }

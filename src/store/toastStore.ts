@@ -2,12 +2,18 @@ import { create } from 'zustand'
 
 export type ToastType = 'success' | 'error' | 'info'
 
+export interface ToastAction {
+  label: string
+  onClick: () => void
+}
+
 export interface Toast {
   id: number
   type: ToastType
   message: string
   title?: string
   duration: number
+  action?: ToastAction
 }
 
 export interface ToastInput {
@@ -15,6 +21,7 @@ export interface ToastInput {
   message: string
   title?: string
   duration?: number
+  action?: ToastAction
 }
 
 export interface ToastState {

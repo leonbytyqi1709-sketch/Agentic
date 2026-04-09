@@ -8,6 +8,7 @@ import Input from '../components/ui/Input.js'
 import Modal from '../components/ui/Modal.js'
 import { useClients } from '../hooks/useClients.js'
 import { toast } from '../store/toastStore.js'
+import { undoableDelete } from '../lib/undoDelete.js'
 import { cn } from '../lib/cn.js'
 import TagPicker, { TagBadges } from '../components/TagPicker.js'
 import EmptyState from '../components/ui/EmptyState.js'
@@ -71,10 +72,12 @@ export default function Clients() {
   const [error, setError] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Client | null>(null)
   const [deleting, setDeleting] = useState<boolean>(false)
+  const [hiddenIds, setHiddenIds] = useState<string[]>([])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     return clients.filter((c) => {
+      if (hiddenIds.includes(c.id)) return false
       if (statusFilter !== 'all' && c.status !== statusFilter) return false
       if (!q) return true
       return (
@@ -82,7 +85,7 @@ export default function Clients() {
         c.company?.toLowerCase().includes(q)
       )
     })
-  }, [clients, search, statusFilter])
+  }, [clients, search, statusFilter, hiddenIds])
 
   const statusCounts = useMemo<Record<StatusFilter, number>>(
     () => ({
@@ -152,20 +155,16 @@ export default function Clients() {
     }
   }
 
-  async function handleDelete() {
+  function handleDelete() {
     if (!deleteTarget) return
-    setDeleting(true)
-    try {
-      await deleteClient(deleteTarget.id)
-      toast.success('Client deleted')
-      setDeleteTarget(null)
-    } catch (err) {
-      const msg = (err as Error).message
-      setError(msg)
-      toast.error(msg)
-    } finally {
-      setDeleting(false)
-    }
+    const target = deleteTarget
+    setDeleteTarget(null)
+    undoableDelete({
+      entityLabel: `Client ${target.name}`,
+      onHide: () => setHiddenIds((prev) => [...prev, target.id]),
+      onRestore: () => setHiddenIds((prev) => prev.filter((x) => x !== target.id)),
+      onCommit: () => deleteClient(target.id),
+    })
   }
 
   function toggleSelect(id: string) {

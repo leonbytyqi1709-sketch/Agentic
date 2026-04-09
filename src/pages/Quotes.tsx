@@ -24,6 +24,7 @@ import { useProjects } from '../hooks/useProjects.js'
 import { useInvoices } from '../hooks/useInvoices.js'
 import { useProfile } from '../hooks/useProfile.js'
 import { toast } from '../store/toastStore.js'
+import { undoableDelete } from '../lib/undoDelete.js'
 import { cn } from '../lib/cn.js'
 import { generateQuotePDF } from '../lib/pdf.js'
 import type {
@@ -76,17 +77,19 @@ export default function Quotes() {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<QuoteWithRelations | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<QuoteWithRelations | null>(null)
+  const [hiddenIds, setHiddenIds] = useState<string[]>([])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    if (!q) return quotes
-    return quotes.filter(
+    const visible = quotes.filter((x) => !hiddenIds.includes(x.id))
+    if (!q) return visible
+    return visible.filter(
       (x) =>
         x.number.toLowerCase().includes(q) ||
         x.clients?.name?.toLowerCase().includes(q) ||
         x.projects?.name?.toLowerCase().includes(q)
     )
-  }, [quotes, search])
+  }, [quotes, search, hiddenIds])
 
   const stats = useMemo(() => {
     const total = quotes.reduce((s, q) => s + Number(q.total || 0), 0)
@@ -142,15 +145,16 @@ export default function Quotes() {
     }
   }
 
-  async function handleDelete() {
+  function handleDelete() {
     if (!deleteTarget) return
-    try {
-      await deleteQuote(deleteTarget.id)
-      toast.success('Quote deleted')
-      setDeleteTarget(null)
-    } catch (e) {
-      toast.error((e as Error).message)
-    }
+    const target = deleteTarget
+    setDeleteTarget(null)
+    undoableDelete({
+      entityLabel: `Quote ${target.number}`,
+      onHide: () => setHiddenIds((prev) => [...prev, target.id]),
+      onRestore: () => setHiddenIds((prev) => prev.filter((x) => x !== target.id)),
+      onCommit: () => deleteQuote(target.id),
+    })
   }
 
   function openCreate() {

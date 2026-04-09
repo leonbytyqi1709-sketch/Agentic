@@ -9,6 +9,7 @@ import Modal from '../components/ui/Modal.js'
 import { useProjects } from '../hooks/useProjects.js'
 import { useClients } from '../hooks/useClients.js'
 import { toast } from '../store/toastStore.js'
+import { undoableDelete } from '../lib/undoDelete.js'
 import { cn } from '../lib/cn.js'
 import ProjectProgress from '../components/ProjectProgress.js'
 import TagPicker, { TagBadges } from '../components/TagPicker.js'
@@ -83,10 +84,12 @@ export default function Projects() {
   const [error, setError] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ProjectWithClient | null>(null)
   const [deleting, setDeleting] = useState<boolean>(false)
+  const [hiddenIds, setHiddenIds] = useState<string[]>([])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     return projects.filter((p) => {
+      if (hiddenIds.includes(p.id)) return false
       if (statusFilter !== 'all' && p.status !== statusFilter) return false
       if (!q) return true
       return (
@@ -94,7 +97,7 @@ export default function Projects() {
         p.clients?.name?.toLowerCase().includes(q)
       )
     })
-  }, [projects, search, statusFilter])
+  }, [projects, search, statusFilter, hiddenIds])
 
   const statusCounts = useMemo<Record<StatusFilter, number>>(
     () => ({
@@ -167,20 +170,16 @@ export default function Projects() {
     }
   }
 
-  async function handleDelete() {
+  function handleDelete() {
     if (!deleteTarget) return
-    setDeleting(true)
-    try {
-      await deleteProject(deleteTarget.id)
-      toast.success('Project deleted')
-      setDeleteTarget(null)
-    } catch (err) {
-      const msg = (err as Error).message
-      setError(msg)
-      toast.error(msg)
-    } finally {
-      setDeleting(false)
-    }
+    const target = deleteTarget
+    setDeleteTarget(null)
+    undoableDelete({
+      entityLabel: `Project ${target.name}`,
+      onHide: () => setHiddenIds((prev) => [...prev, target.id]),
+      onRestore: () => setHiddenIds((prev) => prev.filter((x) => x !== target.id)),
+      onCommit: () => deleteProject(target.id),
+    })
   }
 
   const filterTabs: StatusFilter[] = ['all', 'planning', 'active', 'on_hold', 'completed']

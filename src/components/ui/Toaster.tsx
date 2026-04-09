@@ -56,6 +56,17 @@ export default function Toaster() {
               )}
               <div className="text-text/80 leading-snug">{t.message}</div>
             </div>
+            {t.action && (
+              <button
+                onClick={() => {
+                  t.action!.onClick()
+                  dismiss(t.id)
+                }}
+                className="shrink-0 h-7 px-2.5 rounded-md text-[11px] font-bold uppercase tracking-wider text-primary bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors"
+              >
+                {t.action.label}
+              </button>
+            )}
             <button
               onClick={() => dismiss(t.id)}
               className="text-text/40 hover:text-text shrink-0 p-1 -m-1 rounded transition-colors"
