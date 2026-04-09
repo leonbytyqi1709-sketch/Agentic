@@ -21,7 +21,6 @@ import { useActivities } from '../hooks/useActivities.js'
 import { useTimeEntries } from '../hooks/useTimeEntries.js'
 import { useTasks } from '../hooks/useTasks.js'
 import { useProfile } from '../hooks/useProfile.js'
-import OnboardingCard from '../components/OnboardingCard.js'
 import GrowthChart from '../components/dashboard/GrowthChart.js'
 import type { GrowthChartDatum } from '../components/dashboard/GrowthChart.js'
 import StatusChart from '../components/dashboard/StatusChart.js'
@@ -267,12 +266,6 @@ export default function Dashboard() {
         <div className="text-sm text-text/50">Loading...</div>
       ) : (
         <div className="flex flex-col gap-6">
-          <OnboardingCard
-            clients={clients}
-            projects={projects}
-            invoices={invoices}
-            profile={profile}
-          />
           <div className="flex items-center gap-1 p-1 bg-surface-2 border border-white/[0.06] rounded-xl self-start">
             {ranges.map((r) => (
               <button
