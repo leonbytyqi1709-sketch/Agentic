@@ -18,7 +18,6 @@ import ProjectDetail from './pages/ProjectDetail.js'
 import Invoices from './pages/Invoices.js'
 import InvoiceDetail from './pages/InvoiceDetail.js'
 import Reports from './pages/Reports.js'
-import Management from './pages/Management.js'
 import Expenses from './pages/Expenses.js'
 import Templates from './pages/Templates.js'
 import Calendar from './pages/Calendar.js'
@@ -53,7 +52,6 @@ export default function App() {
         <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
         <Route path="/invoices/:id" element={<ProtectedRoute><InvoiceDetail /></ProtectedRoute>} />
         <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-        <Route path="/management" element={<ProtectedRoute><Management /></ProtectedRoute>} />
         <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
         <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
         <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
