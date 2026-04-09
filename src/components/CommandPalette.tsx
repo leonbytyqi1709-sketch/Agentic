@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Search,
   LayoutDashboard,
+  LineChart,
   Users,
   FolderKanban,
   FileText,
@@ -69,6 +70,7 @@ export default function CommandPalette() {
   const actions: CommandItem[] = useMemo(
     () => [
       { id: 'nav-dash', label: 'Go to Dashboard', icon: LayoutDashboard, kind: 'Action', action: () => navigate('/dashboard') },
+      { id: 'nav-management', label: 'Go to Management', icon: LineChart, kind: 'Action', action: () => navigate('/management') },
       { id: 'nav-clients', label: 'Go to Clients', icon: Users, kind: 'Action', action: () => navigate('/clients') },
       { id: 'nav-projects', label: 'Go to Projects', icon: FolderKanban, kind: 'Action', action: () => navigate('/projects') },
       { id: 'nav-calendar', label: 'Go to Calendar', icon: CalendarIcon, kind: 'Action', action: () => navigate('/calendar') },

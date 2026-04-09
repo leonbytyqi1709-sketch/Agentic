@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
+  LineChart,
   FolderKanban,
   FileText,
   BarChart3,
@@ -32,6 +33,7 @@ interface NavItem {
 
 const nav: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/management', label: 'Management', icon: LineChart },
   { to: '/projects', label: 'Projects', icon: FolderKanban },
   { to: '/tasks', label: 'Tasks', icon: CheckSquare },
   { to: '/notes', label: 'Notes', icon: StickyNote },
