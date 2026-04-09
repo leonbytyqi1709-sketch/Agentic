@@ -16,11 +16,9 @@ import ClientDetail from './pages/ClientDetail.js'
 import Projects from './pages/Projects.js'
 import ProjectDetail from './pages/ProjectDetail.js'
 import Invoices from './pages/Invoices.js'
-import Quotes from './pages/Quotes.js'
 import InvoiceDetail from './pages/InvoiceDetail.js'
 import Reports from './pages/Reports.js'
 import Expenses from './pages/Expenses.js'
-import Recurring from './pages/Recurring.js'
 import Templates from './pages/Templates.js'
 import Calendar from './pages/Calendar.js'
 import Tasks from './pages/Tasks.js'
@@ -52,11 +50,9 @@ export default function App() {
         <Route path="/projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
         <Route path="/projects/:id" element={<ProtectedRoute><ProjectDetail /></ProtectedRoute>} />
         <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
-        <Route path="/quotes" element={<ProtectedRoute><Quotes /></ProtectedRoute>} />
         <Route path="/invoices/:id" element={<ProtectedRoute><InvoiceDetail /></ProtectedRoute>} />
         <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
         <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
-        <Route path="/recurring" element={<ProtectedRoute><Recurring /></ProtectedRoute>} />
         <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
         <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
         <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
