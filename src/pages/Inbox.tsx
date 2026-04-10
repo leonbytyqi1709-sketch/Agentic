@@ -79,16 +79,19 @@ export default function Inbox() {
     setListError(null)
     try {
       const activeToken = await ensureToken()
-      const res = await listMessages(activeToken, query, 20)
+      const res = await listMessages(activeToken, query, 15)
       const raw = res.messages || []
-      // Fetch metadata in batches of 5 to avoid 429 rate limits
+      // Fetch metadata sequentially in small batches with delay to avoid 429
       const details: GmailMessage[] = []
-      for (let i = 0; i < raw.length; i += 5) {
-        const batch = raw.slice(i, i + 5)
+      for (let i = 0; i < raw.length; i += 3) {
+        const batch = raw.slice(i, i + 3)
         const results = await Promise.all(
-          batch.map((m) => getMessage(activeToken, m.id))
+          batch.map((m) => getMessage(activeToken, m.id).catch(() => null))
         )
-        details.push(...results)
+        details.push(...(results.filter(Boolean) as GmailMessage[]))
+        if (i + 3 < raw.length) {
+          await new Promise((r) => setTimeout(r, 300))
+        }
       }
       const items: MessageListItem[] = details.map((m) => {
         const fromHeader = getHeader(m, 'From')
