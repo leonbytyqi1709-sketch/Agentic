@@ -260,7 +260,7 @@ export default function Inbox() {
               <p className="text-xs text-text/40 mb-4">Last connected as {email}</p>
             )}
             <button
-              onClick={() => connect().catch(() => {})}
+              onClick={() => connect().catch((e) => { console.error('Gmail connect error:', e); toast.error((e as Error).message || 'Gmail connection failed') })}
               disabled={connecting}
               className="h-11 px-6 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-dark active:scale-95 transition-all shadow-glow-primary inline-flex items-center gap-2 disabled:opacity-60"
             >
